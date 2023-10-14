@@ -35,7 +35,7 @@ int counter = 0;
 
 int main(int argc, char **argv) {
     // yes
-    GRRLIB_texImg* frames[] = {
+    GRRLIB_texImg *frames[] = {
             GRRLIB_LoadTexture(fish_0_png), GRRLIB_LoadTexture(fish_1_png),
             GRRLIB_LoadTexture(fish_2_png), GRRLIB_LoadTexture(fish_3_png),
             GRRLIB_LoadTexture(fish_4_png), GRRLIB_LoadTexture(fish_5_png),
@@ -48,25 +48,25 @@ int main(int argc, char **argv) {
     };
 
     GRRLIB_Init();
-	WPAD_Init();
+    WPAD_Init();
 
-	ASND_Init();
-	MP3Player_Init();
+    ASND_Init();
+    MP3Player_Init();
 
-	MP3Player_PlayBuffer(fish_intro_mp3, fish_intro_mp3_size, NULL);
+    MP3Player_PlayBuffer(fish_intro_mp3, fish_intro_mp3_size, NULL);
 
-    int frame_count = sizeof(frames) / sizeof(GRRLIB_texImg*);
+    int frame_count = sizeof(frames) / sizeof(GRRLIB_texImg * );
 
-	while (1) {
+    while (1) {
         // this is a very bad way to loop the audio
         // and it isn't even completely seamless
         // TODO: replace with something better
         MP3Player_PlayBuffer(fish_loop_mp3, fish_loop_mp3_size, NULL);
 
-		WPAD_ScanPads();
+        WPAD_ScanPads();
         GRRLIB_FillScreen(GRRLIB_BLACK);
-        
-		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME) {
+
+        if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME) {
             break;
         }
 
@@ -79,14 +79,14 @@ int main(int argc, char **argv) {
             frame_index = 0;
         }
 
-        GRRLIB_texImg* frame = frames[frame_index];
+        GRRLIB_texImg *frame = frames[frame_index];
 
         // TODO: images might be of the wrong size
         // i assumed the wii used a different resolution and now the
         // fish isn't properly aligned on the screen
         GRRLIB_DrawImg(0, 0, frame, 0, 1, 1, GRRLIB_WHITE);
         GRRLIB_Render();
-	}
+    }
 
     for (int i = 0; i < frame_count; i++) {
         GRRLIB_FreeTexture(frames[i]);
@@ -94,5 +94,5 @@ int main(int argc, char **argv) {
 
     GRRLIB_Exit();
     exit(0);
-	return 0;
+    return 0;
 }
