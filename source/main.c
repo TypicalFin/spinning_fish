@@ -61,7 +61,5 @@ int main(int argc, char **argv) {
 
     free_frames();
     GRRLIB_Exit();
-
-    exit(0);
     return 0;
 }
