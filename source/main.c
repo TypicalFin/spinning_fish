@@ -3,16 +3,17 @@
 #include <gccore.h>
 #include <wiiuse/wpad.h>
 #include <asndlib.h>
-#include <mp3player.h>
 #include <grrlib.h>
 
+#include "oggplayer.h"
 #include "frames.h"
 
-#include "fish_intro_mp3.h"
-#include "fish_loop_mp3.h"
+#include "fish_intro_ogg.h"
+#include "fish_loop_ogg.h"
 
 #define GRRLIB_BLACK 0x000000FF
 #define GRRLIB_WHITE 0xFFFFFFFF
+#define ROTATE_EVERY_N_FRAMES 2
 
 int frame_index = 0;
 int counter = 0;
@@ -22,19 +23,15 @@ int main(int argc, char **argv) {
     WPAD_Init();
 
     ASND_Init();
-    MP3Player_Init();
-
-    MP3Player_PlayBuffer(fish_intro_mp3, fish_intro_mp3_size, NULL);
 
     init_frames();
     int frame_count = sizeof(frames) / sizeof(GRRLIB_texImg * );
 
-    while (1) {
-        // this is a very bad way to loop the audio
-        // and it isn't even completely seamless
-        // TODO: replace with something better
-        MP3Player_PlayBuffer(fish_loop_mp3, fish_loop_mp3_size, NULL);
+    // TODO: add the intro ogg
+    //PlayOgg(fish_intro_ogg, fish_intro_ogg_size, 0, OGG_ONE_TIME);
+    PlayOgg(fish_loop_ogg, fish_loop_ogg_size, 0, OGG_INFINITE_TIME);
 
+    while (1) {
         WPAD_ScanPads();
         GRRLIB_FillScreen(GRRLIB_BLACK);
 
@@ -42,8 +39,10 @@ int main(int argc, char **argv) {
             break;
         }
 
-        if ((counter = !counter)) {
+        // TODO: perhaps a video would be better lol
+        if (++counter % ROTATE_EVERY_N_FRAMES == 0) {
             ++frame_index;
+            counter = 0;
         }
 
         if (frame_index >= frame_count) {
@@ -60,6 +59,8 @@ int main(int argc, char **argv) {
     }
 
     free_frames();
+
     GRRLIB_Exit();
+    StopOgg();
     return 0;
 }
