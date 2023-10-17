@@ -13,10 +13,15 @@
 
 #define GRRLIB_BLACK 0x000000FF
 #define GRRLIB_WHITE 0xFFFFFFFF
-#define ROTATE_EVERY_N_FRAMES 2
 
+int rotation_interval = 3;
 int frame_index = 0;
 int counter = 0;
+
+int clamp(int value, int min, int max) {
+    const int t = value < min ? min : value;
+    return t > max ? max : t;
+}
 
 int main(int argc, char **argv) {
     GRRLIB_Init();
@@ -35,19 +40,26 @@ int main(int argc, char **argv) {
         WPAD_ScanPads();
         GRRLIB_FillScreen(GRRLIB_BLACK);
 
-        if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME) {
+        u32 buttons_down = WPAD_ButtonsDown(0);
+
+        if (buttons_down & WPAD_BUTTON_PLUS)
+            --rotation_interval;
+        else if (buttons_down & WPAD_BUTTON_MINUS)
+            ++rotation_interval;
+
+        if (buttons_down & WPAD_BUTTON_HOME)
             break;
-        }
+
+        rotation_interval = clamp(rotation_interval, 1, 30);
 
         // TODO: perhaps a video would be better lol
-        if (++counter % ROTATE_EVERY_N_FRAMES == 0) {
+        if (++counter % rotation_interval == 0) {
             ++frame_index;
             counter = 0;
         }
 
-        if (frame_index >= frame_count) {
+        if (frame_index >= frame_count)
             frame_index = 0;
-        }
 
         GRRLIB_texImg *frame = frames[frame_index];
 
